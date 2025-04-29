@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1a84c0ca-0bbf-4f7d-8eb5-2b85e35478eb" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="FastAPI main" />
+        <option value="FastAPI test_main" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 1
+}]]></component>
+  <component name="ProjectId" id="2wETA1Vxlf8rsoeJCBpOSu2Lnkt" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "FastAPI.fastApiProject.executor": "Run",
+    "FastAPI.server.executor": "Run",
+    "FastAPI.test_end.executor": "Run",
+    "Python.UserIDManager.executor": "Run",
+    "Python.db.executor": "Run",
+    "Python.main.executor": "Debug",
+    "Python.server.executor": "Run",
+    "Python.test.executor": "Debug",
+    "Python.user.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/Michal Kaniewski/Desktop/Semestr 6/Podstawy konteneryzacji i architektury mikroserwisów/fastApiProject",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Michal Kaniewski\Desktop\Semestr 6\Podstawy konteneryzacji i architektury mikroserwisów\fastApiProject" />
+      <recent name="C:\Users\Michal Kaniewski\Desktop\Semestr 6\Podstawy konteneryzacji i architektury mikroserwisów\fastApiProject\backend" />
+      <recent name="C:\Users\Michal Kaniewski\Desktop\Semestr 6\Podstawy konteneryzacji i architektury mikroserwisów\fastApiProject\config" />
+      <recent name="C:\Users\Michal Kaniewski\Desktop\Semestr 6\Podstawy konteneryzacji i architektury mikroserwisów\fastApiProject\endpoint" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="server" type="Python.FastAPI">
+      <option name="file" value="C:\Users\Michal Kaniewski\Desktop\Semestr 6\Podstawy konteneryzacji i architektury mikroserwisów\fastApiProject\server.py" />
+      <module name="fastApiProject" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/Scripts/python.exe" />
+      <option name="SDK_NAME" value="Python 3.12 (fastApiProject)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test_end" type="Python.FastAPI">
+      <option name="file" value="C:\Users\Michal Kaniewski\Desktop\Semestr 6\Podstawy konteneryzacji i architektury mikroserwisów\fastApiProject\endpoint\test.py" />
+      <module name="fastApiProject" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/Scripts/python.exe" />
+      <option name="SDK_NAME" value="Python 3.12 (fastApiProject)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="FastAPI.test_end" />
+      <item itemvalue="FastAPI.server" />
+    </list>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.18034.82" />
+        <option value="bundled-python-sdk-975db3bf15a3-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.18034.82" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1a84c0ca-0bbf-4f7d-8eb5-2b85e35478eb" name="Changes" comment="" />
+      <created>1745605585625</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1745605585625</updated>
+      <workItem from="1745605586987" duration="45020000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/fastApiProject$UserIDManager.coverage" NAME="UserIDManager Coverage Results" MODIFIED="1745931309379" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend/database" />
+    <SUITE FILE_PATH="coverage/fastApiProject$db.coverage" NAME="db Coverage Results" MODIFIED="1745933517126" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend/endpoint" />
+    <SUITE FILE_PATH="coverage/fastApiProject$user.coverage" NAME="user Coverage Results" MODIFIED="1745942384669" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend/user" />
+    <SUITE FILE_PATH="coverage/fastApiProject$server.coverage" NAME="server Coverage Results" MODIFIED="1745942367115" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend" />
+    <SUITE FILE_PATH="coverage/fastApiProject$test.coverage" NAME="test Coverage Results" MODIFIED="1745609738785" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/endpoint" />
+    <SUITE FILE_PATH="coverage/fastApiProject$fastApiProject.coverage" NAME="test_end Coverage Results" MODIFIED="1745606238643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/fastApiProject$main.coverage" NAME="main Coverage Results" MODIFIED="1745933634206" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
