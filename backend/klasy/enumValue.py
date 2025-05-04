@@ -22,7 +22,10 @@ class UserGender(str, Enum):
     FEMALE = "F"
     OTHER = "O"
 
-class MuscleGroup(str, Enum):
-    """Wartość enumerate dostępnych grupy mięśniowej"""
-
-    pass
+class KategoriesExercise(str, Enum):
+    """Wartość enumerate dostępnych kategorii grup mięśniwoych"""
+    CHEST = "Klatka piersiowa"
+    BELLY = "Brzuch"
+    LEGS = "Nogi"
+    BACK = "Plecy"
+    ARMS = "Ramiona"
