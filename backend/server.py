@@ -24,3 +24,11 @@ if __name__ == "__main__":
         reload=True,
         workers=1
     )
+
+    uvicorn.run(
+        "endpoint.cohere_ai:ai_app",
+        host="0.0.0.0",
+        port=int(os.getenv("ENDPOINT_AI_PORT", 8890)),
+        reload=True,
+        workers=1
+    )

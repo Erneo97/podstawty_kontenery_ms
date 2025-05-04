@@ -1,7 +1,8 @@
 from fastapi.openapi.models import Schema
 from pydantic import BaseModel, Field
+from typing import List
 
-"""Wszystkie klasy oparte na BseModel, któe klient wymienia z serewerem"""
+"""Wszystkie klasy oparte na BseModel, które klient wymienia z serewerem"""
 
 
 class UserBase(BaseModel):
@@ -41,4 +42,18 @@ class UserWeight(BaseModel):
 
     def values(self):
         return list(self.model_dump().values())
+
+class Exercise(BaseModel):
+    name: str
+    liczba_serii: int
+    liczba_powtorzen: int
+
+class TreningPlan(BaseModel):
+    name: str
+    cwiczenia: List[Exercise]
+
+
+class ReguestPlan(BaseModel):
+    liczbaDniTreningowych: int
+    cel: str
 
