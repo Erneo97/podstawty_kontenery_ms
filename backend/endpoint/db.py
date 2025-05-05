@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Body, HTTPException
 from databases import Database
 import os
 
@@ -191,3 +191,161 @@ async def change_user_password(data: LoginData):
 
 
     return UserOut(id_uzytkownika=UserIDManager.generate_public_id(record['id_uzytkownika']))
+
+
+#   ----------------        Cześć Planowa / treningowa ------------------------
+
+
+async def _get_exercise_id(name: str) -> int:
+    select_q = """
+        SELECT id_cwiczenia
+          FROM cwiczenia
+         WHERE nazwa = :nazwa
+        """
+    existing = await database.fetch_one(query=select_q, values={"nazwa": name})
+    return existing["id_cwiczenia"]
+
+@db_app.post("/new_exercise", response_model=int, status_code=status.HTTP_201_CREATED)
+async def new_exercise(data: NewExercise):
+    """Dodawanie nowego ćwiczenia do tabeli pytań. Jeżeni ćwiczenie o podanej nazwie istnieje tozwraca istniejące id_cwiczenia jak nie to dodaje to ćwiczenie i zwraca id_cwiczenia"""
+    existing = await _get_exercise_id(data.nazwa)
+    if existing:
+        return existing
+
+    query = """
+    INSERT INTO cwiczenia (nazwa, kategoaria)
+    VALUES (:nazwa, :kategoria)
+    RETURNING id_cwiczenia
+    """
+    values = {"nazwa": data.nazwa, "kategoria": data.kategoria}
+    print(values)
+    try:
+        record = await database.fetch_one(query=query, values=values)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Błąd serwera przy dodawaniu ćwiczenia"
+        )
+    return record["id_cwiczenia"]
+
+@db_app.post(
+    "/new_plan",
+    response_model=int,
+    status_code=status.HTTP_201_CREATED
+)
+async def create_plan(
+        plan: TreningPlan,
+        user_id: str = Body(...),
+):
+
+    # 3.1 Wstaw nagłówek planu
+    insert_plan_q = """
+    INSERT INTO plany_treningowe (id_uzytkownika, nazwa, cwiczenia_w_planie)
+    VALUES (:id_uzytkownika, :nazwa, :cwiczenia_w_planie)
+    RETURNING id_planu
+    """
+    user_id = UserIDManager.get_db_id(user_id)
+    header_vals = {
+        "id_uzytkownika": int(user_id),
+        "nazwa": plan.name,
+        "cwiczenia_w_planie": len(plan.cwiczenia)
+    }
+    try:
+        rec = await database.fetch_one(query=insert_plan_q, values=header_vals)
+        plan_id = rec["id_planu"]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+    # 3.2 Wstaw szczegóły: każde ćwiczenie w planie
+
+
+    insert_detail_q = """
+    INSERT INTO cwiczenia_w_planie_treningowym
+      (id_planu_treningowego, id_cwiczenia, liczba_serii, liczba_powtorzen)
+    VALUES (:id_planu_treningowego, :id_cwiczenia, :serie, :powtorzenia)
+    """
+    for ex in plan.cwiczenia:
+        id_cwiczenie = await _get_exercise_id(ex.name)
+        print("id_cwiczenie: ", id_cwiczenie)
+        detail_vals = {
+            "id_planu_treningowego": plan_id,
+            "id_cwiczenia": id_cwiczenie,
+            "serie": ex.liczba_serii,
+            "powtorzenia": ex.liczba_powtorzen
+        }
+        try:
+            await database.execute(query=insert_detail_q, values=detail_vals)
+        except Exception as e:
+
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(e)
+            )
+
+
+    return plan_id
+
+
+@db_app.get(
+    "/plans",
+    response_model=List[TreningPlan],
+    status_code=status.HTTP_200_OK
+)
+async def get_all_plans(user_id: str = Body(..., embed=True)):
+    """Zwraca Listę wszystkich planów danego użytkownika"""
+    try:
+        db_user_id = UserIDManager.get_db_id(user_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Nieprawidłowe user_id: {e}")
+
+    select_plans_q = """
+    SELECT id_planu, nazwa
+      FROM plany_treningowe
+     WHERE id_uzytkownika = :uid
+    """
+    try:
+        plan_headers = await database.fetch_all(
+            query=select_plans_q,
+            values={"uid": int(db_user_id)}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Błąd przy pobieraniu planów: {e}")
+
+    # 2.3. Dla każdego planu pobierz ćwiczenia i złóż model TreningPlan
+    plans: List[TreningPlan] = []
+    detail_q = """
+    SELECT c.nazwa    AS exercise_name,
+           d.liczba_serii   AS serie,
+           d.liczba_powtorzen AS powtorzenia
+      FROM cwiczenia_w_planie_treningowym d
+      JOIN cwiczenia c
+        ON c.id_cwiczenia = d.id_cwiczenia
+     WHERE d.id_planu_treningowego = :plan_id
+    """
+
+    for hdr in plan_headers:
+        rows = await database.fetch_all(
+            query=detail_q,
+            values={"plan_id": hdr["id_planu"]}
+        )
+
+        exercises = [
+            Exercise(
+                name=row["exercise_name"],
+                liczba_serii=row["serie"],
+                liczba_powtorzen=row["powtorzenia"]
+            )
+            for row in rows
+        ]
+
+        plans.append(
+            TreningPlan(
+                name=hdr["nazwa"],
+                cwiczenia=exercises
+            )
+        )
+
+    return plans

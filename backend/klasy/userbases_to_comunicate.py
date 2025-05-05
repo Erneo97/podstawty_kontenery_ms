@@ -48,6 +48,10 @@ class Exercise(BaseModel):
     liczba_serii: int
     liczba_powtorzen: int
 
+class NewExercise(BaseModel):
+    nazwa: str
+    kategoria: str
+
 class TreningPlan(BaseModel):
     name: str
     cwiczenia: List[Exercise]
@@ -56,4 +60,5 @@ class TreningPlan(BaseModel):
 class ReguestPlan(BaseModel):
     liczbaDniTreningowych: int
     cel: str
+
 
