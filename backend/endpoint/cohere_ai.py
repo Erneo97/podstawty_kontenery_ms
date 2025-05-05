@@ -2,9 +2,7 @@ from fastapi import FastAPI, HTTPException
 import os
 from backend.klasy.userbases_to_comunicate import *
 
-
 from dotenv import load_dotenv
-load_dotenv()
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '..', 'config', '.env'))
 
@@ -20,6 +18,7 @@ co = cohere.ClientV2(APIkey)
 
 @ai_app.get("/trening_plan", response_model=TreningPlan)
 def plan(warunki: ReguestPlan):
+    print("Ja tu działam")
     prompt = (
         f"Ułóż plan treningowy na siłownię na {warunki.liczbaDniTreningowych} dni w tygodniu. "
         f"Cel: {warunki.cel}. "

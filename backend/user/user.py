@@ -15,6 +15,7 @@ class User:
     def __init__(self):
         load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..","..",  'config', '.env'))
         self.__ENDPOINT_DB_URL = os.getenv("ENDPOINT_DB_URL")
+        self.__ENDPOINT_AI_URL = os.getenv("ENDPOINT_AI_URL")
 
         self.planyUzytkownika = None
 
@@ -51,11 +52,13 @@ class User:
         if response.ok:
             data = response.json()
             self.__ID_PUBLIC =  data.get("id_uzytkownika")
+            self.userInformation = self.pobierz_info_uzytkownika()
+            self.planyUzytkownika = self.pobierz_plany_treningowe()
+
             return  self.__ID_PUBLIC
         else:
             print(f"Blad komunikacji z serwerem {response.status_code} komunikat: {response.text}")
 
-            self.planyUzytkownika = self.pobierz_plany_treningowe()
         return None
 
     def rejestracja(self, name, surname, email:str, password:str, gender:UserGender, height:float, goal:UserGoal) -> str:
@@ -159,7 +162,33 @@ class User:
     def zmien_cel(self):
         pass
 
+    def generowanie_planu_treningowego_AI(self, liczba_dni_treningowych: int) -> TreningPlan:
+        cel_user = self.userInformation.cel
 
+        body = ReguestPlan(
+            liczbaDniTreningowych=liczba_dni_treningowych,
+            cel=cel_user
+        ).model_dump()
+
+        resp = requests.get(f"{self.__ENDPOINT_AI_URL}/trening_plan", json=body)
+        print("Status:", resp.status_code, resp.ok)
+
+        if not resp.ok:
+            print(f"Błąd {resp.status_code}: {resp.text}")
+            exit(1)
+
+        try:
+            plan = TreningPlan.model_validate(resp.json())
+        except Exception as e:
+            print("Błąd parsowania odpowiedzi:", e)
+            exit(1)
+
+        return plan
+
+
+def __test_generowania_planu_ai(user :User):
+    plan = user.generowanie_planu_treningowego_AI(4)
+    __wyswietl_plan(plan)
 
 
 def __dodaj_cwiczenia(user: User):
@@ -217,18 +246,28 @@ def __test_dodawania_planu(user: User):
     id_planu = user.dodaj_pan_treningowy(plan)
     print(id_planu)
 
+def __wyswietl_plan(plan: TreningPlan):
+    print(f"nazwa planu: ", plan.name)
+    i = 0
+    print("{0:2s})  {1:50s} - {2:2s} - {3:2s}".format("nr", "nazwa", "liczba serii" , "liczba powtorzen"))
+
+    for cwiczenie in plan.cwiczenia:
+        print("{0:2s})  {1:50s} - {2:2d} - {3:2d}".format(
+            chr(ord('a') + i),
+            cwiczenie.name,
+            cwiczenie.liczba_serii,
+            cwiczenie.liczba_powtorzen
+        ))
+        i+=1
+
 def __test_pobieranie_palnow(user: User):
     ret = user.pobierz_plany_treningowe()
     print("Twoje plany:")
     nr_panu = 1
     for plan in ret:
-        print(f"\n{nr_panu}) nazwa planu: ", plan.name)
-        i = 0
+        print(f"{nr_panu}) ")
         nr_panu += 1
-        print("nazwa\t liczba serii \t liczba powtorzen")
-        for cwiczenie in plan.cwiczenia:
-            print(f"{chr(ord('a') + i)})  {cwiczenie.name} - {cwiczenie.liczba_serii} - {cwiczenie.liczba_powtorzen}")
-            i+=1
+        __wyswietl_plan(plan)
 
 
 if __name__ == "__main__":
@@ -239,7 +278,7 @@ if __name__ == "__main__":
     user.logowanie("mk@example.pl", "123456")
     # __test_dodawania_planu(user)
     __test_pobieranie_palnow(user)
-
+    # __test_generowania_planu_ai(user)
 
 
 
