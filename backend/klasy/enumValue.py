@@ -29,3 +29,5 @@ class KategoriesExercise(str, Enum):
     LEGS = "Nogi"
     BACK = "Plecy"
     ARMS = "Ramiona"
+    CARDIO = "Cardio"
+    NOT_DEFINED = "Nie zdefiniowano"
