@@ -206,10 +206,12 @@ def __test_logowania(user: User):
 
 def __test_dodawania_planu(user: User):
     plan = TreningPlan(
-        name="Plan Siłowy",
+        name="Plan Redukcja 2.0",
         cwiczenia=[
             Exercise(name="Martwy ciąg", liczba_serii=4, liczba_powtorzen=10),
             Exercise(name="Przysiad bułgarski (z hantlami)", liczba_serii=3, liczba_powtorzen=12),
+            Exercise(name="Rozpiętki na maszynie", liczba_serii=3, liczba_powtorzen=12),
+            Exercise(name="Wiosłowanie hantlami", liczba_serii=3, liczba_powtorzen=12),
         ]
     )
     id_planu = user.dodaj_pan_treningowy(plan)
@@ -217,7 +219,17 @@ def __test_dodawania_planu(user: User):
 
 def __test_pobieranie_palnow(user: User):
     ret = user.pobierz_plany_treningowe()
-    print(ret)
+    print("Twoje plany:")
+    nr_panu = 1
+    for plan in ret:
+        print(f"\n{nr_panu}) nazwa planu: ", plan.name)
+        i = 0
+        nr_panu += 1
+        print("nazwa\t liczba serii \t liczba powtorzen")
+        for cwiczenie in plan.cwiczenia:
+            print(f"{chr(ord('a') + i)})  {cwiczenie.name} - {cwiczenie.liczba_serii} - {cwiczenie.liczba_powtorzen}")
+            i+=1
+
 
 if __name__ == "__main__":
     user = User()
