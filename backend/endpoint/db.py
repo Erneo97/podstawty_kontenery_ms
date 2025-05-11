@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from fastapi import FastAPI, Body, HTTPException
 from databases import Database
 import os
@@ -5,6 +7,7 @@ import os
 from passlib.context import CryptContext
 from starlette import status
 
+from backend.klasy.enumValue import KategoriesExercise
 from backend.klasy.userbases_to_comunicate import *
 from backend.database.UserIDManager import UserIDManager
 
@@ -193,7 +196,7 @@ async def change_user_password(data: LoginData):
     return UserOut(id_uzytkownika=UserIDManager.generate_public_id(record['id_uzytkownika']))
 
 
-#   ----------------        Cześć Planowa / treningowa ------------------------
+#   ----------------        Cześć Planowa Trewningowe ------------------------
 
 
 async def _get_exercise_id(name: str) -> int:
@@ -203,12 +206,14 @@ async def _get_exercise_id(name: str) -> int:
          WHERE nazwa = :nazwa
         """
     existing = await database.fetch_one(query=select_q, values={"nazwa": name})
-    return existing["id_cwiczenia"]
+    return existing["id_cwiczenia"] if existing else None
 
-@db_app.post("/new_exercise", response_model=int, status_code=status.HTTP_201_CREATED)
-async def new_exercise(data: NewExercise):
+
+async def _new_exercise(data: NewExercise):
     """Dodawanie nowego ćwiczenia do tabeli pytań. Jeżeni ćwiczenie o podanej nazwie istnieje tozwraca istniejące id_cwiczenia jak nie to dodaje to ćwiczenie i zwraca id_cwiczenia"""
+    print("_new_exercise data:", data)
     existing = await _get_exercise_id(data.nazwa)
+    print("existing: ", existing)
     if existing:
         return existing
 
@@ -228,6 +233,10 @@ async def new_exercise(data: NewExercise):
         )
     return record["id_cwiczenia"]
 
+@db_app.post("/new_exercise", response_model=int, status_code=status.HTTP_201_CREATED)
+async def new_exercise(data: NewExercise):
+    return await _new_exercise(data)
+
 @db_app.post(
     "/new_plan",
     response_model=int,
@@ -245,6 +254,7 @@ async def create_plan(
     RETURNING id_planu
     """
     user_id = UserIDManager.get_db_id(user_id)
+    print("user_id:  ", user_id)
     header_vals = {
         "id_uzytkownika": int(user_id),
         "nazwa": plan.name,
@@ -269,7 +279,11 @@ async def create_plan(
     """
     for ex in plan.cwiczenia:
         id_cwiczenie = await _get_exercise_id(ex.name)
-        print("id_cwiczenie: ", id_cwiczenie)
+        print(f"id_cwiczenie: {id_cwiczenie} ({type(id_cwiczenie)})")
+        if id_cwiczenie is None:
+            id_cwiczenie = await _new_exercise(NewExercise(nazwa = ex.name, kategoria = KategoriesExercise.NOT_DEFINED))
+        print("id_cwiczenie[id_cwiczenia]  " , id_cwiczenie)
+
         detail_vals = {
             "id_planu_treningowego": plan_id,
             "id_cwiczenia": id_cwiczenie,
@@ -349,3 +363,122 @@ async def get_all_plans(user_id: str = Body(..., embed=True)):
         )
 
     return plans
+
+
+# ------------------------------------ Sesje treningowe -------------------
+
+@db_app.post("/new_trening_sesion", status_code=status.HTTP_201_CREATED)
+async def new_trening_sesion(
+        data: Trening
+):
+    user_id = UserIDManager.get_db_id(data.id_public)
+
+    insert_trening_q = """
+    INSERT INTO treningi (id_uzytkownika, id_planu, data)
+    VALUES (:id_uzytkownika, :id_planu, :data)
+    RETURNING id_treningu
+    """
+    header_vals = {
+        "id_uzytkownika": user_id,
+        "id_planu": data.id_trening_plan,
+        "data": datetime.strptime(data.date, "%Y-%m-%d"),
+    }
+
+
+    try:
+        ret = await database.fetch_one(query=insert_trening_q, values=header_vals)
+        id_treningu = ret["id_treningu"]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Błąd przy zapisie treningu: {str(e)}"
+        )
+
+    # 2. Wstaw serie (ćwiczenia w treningu)
+    insert_seria_q = """
+    INSERT INTO serie (id_treningu, id_cwiczenia, obciazenie, powtorzenia)
+    VALUES (:id_treningu, :id_cwiczenia, :obciazenie, :powtorzenia)
+    
+    """
+
+    for ex in data.made:
+        id_cwiczenia = await _get_exercise_id(ex.name)
+
+
+        detail_vals = {
+            "id_treningu": id_treningu,
+            "id_cwiczenia": id_cwiczenia,
+            "obciazenie": ex.liczba_serii,
+            "powtorzenia": ex.liczba_powtorzen
+        }
+
+        try:
+            await database.execute(query=insert_seria_q, values=detail_vals)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Błąd przy zapisie serii: {str(e)}"
+            )
+
+
+
+@db_app.get(
+    "/trainings_user",
+    response_model=List[Trening],
+    status_code=status.HTTP_200_OK
+)
+async def get_user_trainings(user_id: str = Body(..., embed=True)):
+    user_db_id = UserIDManager.get_db_id(user_id)
+
+    # 1. Pobierz sesje
+    treningi_q = """
+    SELECT id_treningu, id_planu, data
+    FROM treningi
+    WHERE id_uzytkownika = :user_id
+    ORDER BY data DESC
+    """
+    treningi = await database.fetch_all(
+        query=treningi_q,
+        values={"user_id": user_db_id}
+    )
+    if not treningi:
+        return []
+
+    # 2. Pobierz serie
+    trening_ids = [t["id_treningu"] for t in treningi]
+    serie_q = """
+    SELECT s.id_treningu, c.nazwa, s.powtorzenia
+    FROM serie s
+    JOIN cwiczenia c ON s.id_cwiczenia = c.id_cwiczenia
+    WHERE s.id_treningu = ANY(:trening_ids)
+    """
+    serie = await database.fetch_all(
+        query=serie_q,
+        values={"trening_ids": trening_ids}
+    )
+
+    # 3. Grupowanie
+    from collections import defaultdict
+    cwiczenia_map = defaultdict(lambda: defaultdict(list))
+    for s in serie:
+        cwiczenia_map[s["id_treningu"]][s["nazwa"]].append(s["powtorzenia"])
+
+    # 4. Budowa odpowiedzi
+    result: List[Trening] = []
+    for t in treningi:
+        made = [
+            Exercise(
+                name=name,
+                liczba_serii=len(powt_list),
+                liczba_powtorzen=powt_list[0]
+            )
+            for name, powt_list in cwiczenia_map[t["id_treningu"]].items()
+        ]
+        result.append(Trening(
+            id_public=user_id,
+            id_trening_plan=t["id_treningu"],
+            date=t["data"].strftime("%Y-%m-%d"),
+            made=made
+        ))
+
+    return result

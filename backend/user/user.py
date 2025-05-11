@@ -41,6 +41,21 @@ class User:
         else:
             print(f"Blad komunikacji z serwerem {response.status_code} komunikat: {response.text}")
 
+    def pobierz_sesje(self):
+        res = requests.get(
+            f"{self.__ENDPOINT_DB_URL}/trainings_user",
+            json={"user_id": self.__ID_PUBLIC}
+        )
+        # print(res.json())
+        res.raise_for_status()
+
+        sessions_json = res.json()
+        print(sessions_json)
+
+        sessions: List[Trening] = [Trening(**t) for t in sessions_json]
+        return sessions
+
+
     def logowanie(self, email, password) -> str:
         """Funkcja logowania, po podaniu email i hasła natępujhe łączenie z serwerem gdy się powiedzie dostaję się publiczny toen identyfikacyjny w przeciwnym wypadku None i komunikat błędu."""
 
@@ -54,7 +69,8 @@ class User:
             self.__ID_PUBLIC =  data.get("id_uzytkownika")
             self.userInformation = self.pobierz_info_uzytkownika()
             self.planyUzytkownika = self.pobierz_plany_treningowe()
-
+            self.sesje_treningowe = self.pobierz_sesje()
+            print(self.sesje_treningowe)
             return  self.__ID_PUBLIC
         else:
             print(f"Blad komunikacji z serwerem {response.status_code} komunikat: {response.text}")
@@ -107,7 +123,7 @@ class User:
         Wywołuje POST /new_plan i zwraca id nowo utworzonego planu (jeśli OK),
         w przeciwnym razie None.
         """
-
+        print("dodaj_pan_treningowy:", plan)
 
         payload = {
             "plan": plan.model_dump(),
@@ -153,11 +169,18 @@ class User:
 
         return None
 
-    def dodaj_nowy_trening(self):
-        pass
+    def dodaj_sesje_treningowa(self, trening: Trening) -> bool:
+        """Dodaje sesji treningowej do bazy danych"""
 
-    def dodaj_sesje_treningowa(self):
-        pass
+        response = requests.post(f"{self.__ENDPOINT_DB_URL}/new_trening_sesion",
+                                 json=trening.model_dump())
+        if response.ok:
+            self.sesje_treningowe.append(trening)
+            return True
+        else:
+            print(f"Blad komunikacji z serwerem {response.status_code} komunikat: {response.text}")
+
+        return False
 
     def zmien_cel(self):
         pass
@@ -270,6 +293,22 @@ def __test_pobieranie_palnow(user: User):
         __wyswietl_plan(plan)
 
 
+def __test_dodaj_sesje_treningowa(user: User):
+    e1 = Exercise(name="Deska", liczba_serii=95, liczba_powtorzen=10)
+    e2 = Exercise(name="Skakanka", liczba_serii=95, liczba_powtorzen=12)
+    e3 = Exercise(name="Uginanie nóg leżąc", liczba_serii=55, liczba_powtorzen=12)
+
+    list_exercise = [e1, e2, e3]
+
+    trening = Trening(id_public = user._User__ID_PUBLIC, id_trening_plan= 38,
+        date= "2025-05-09",
+        made= list_exercise)
+    print(trening)
+
+    user.dodaj_sesje_treningowa(trening)
+
+
+
 if __name__ == "__main__":
     user = User()
 
@@ -277,8 +316,8 @@ if __name__ == "__main__":
     # __dodaj_cwiczenia(user)
     user.logowanie("mk@example.pl", "123456")
     # __test_dodawania_planu(user)
-    __test_pobieranie_palnow(user)
+    # __test_pobieranie_palnow(user)
     # __test_generowania_planu_ai(user)
-
+    # __test_dodaj_sesje_treningowa(user)
 
 
