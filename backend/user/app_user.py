@@ -2,7 +2,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from backend.klasy.userbases_to_comunicate import TreningPlan, Trening, Exercise
+from ..klasy.userbases_to_comunicate import TreningPlan, Trening, Exercise
 from user import User, UserGender, UserGoal
 
 class App(tk.Tk):

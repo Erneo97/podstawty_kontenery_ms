@@ -2,7 +2,7 @@ import cohere
 from key import APIkey
 import json
 import re
-from backend.klasy.userbases_to_comunicate import *
+from ..klasy.userbases_to_comunicate import *
 
 warunki = ReguestPlan
 warunki.cel = "Redukcja"

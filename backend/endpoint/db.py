@@ -7,9 +7,9 @@ import os
 from passlib.context import CryptContext
 from starlette import status
 
-from backend.klasy.enumValue import KategoriesExercise
-from backend.klasy.userbases_to_comunicate import *
-from backend.database.UserIDManager import UserIDManager
+from ..klasy.enumValue import KategoriesExercise
+from ..klasy.userbases_to_comunicate import *
+from ..database.UserIDManager import UserIDManager
 
 from datetime import date, datetime
 def __get_date_for_db():
