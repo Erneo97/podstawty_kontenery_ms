@@ -1,8 +1,11 @@
 fastapi
-uvicorn
+uvicorn[standard]
+python-dotenv
 databases
+passlib
 asyncpg
 psycopg2-binary==2.9.10
 psycopg2
 email-validator
 bcrypt
+python -m pip install cohere --upgrade

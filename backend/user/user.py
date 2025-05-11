@@ -1,9 +1,9 @@
 import requests
-from ..klasy.userbases_to_comunicate import *
+from backend.klasy.userbases_to_comunicate import *
 import os
 from dotenv import load_dotenv
-from ..klasy.enumValue import UserGoal, UserGender, KategoriesExercise
-from ..klasy.userbases_to_comunicate import UserBase, Exercise
+from backend.klasy.enumValue import UserGoal, UserGender, KategoriesExercise
+from backend.klasy.userbases_to_comunicate import UserBase, Exercise
 from pydantic import TypeAdapter
 
 
