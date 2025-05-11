@@ -45,7 +45,6 @@ def plan(warunki: ReguestPlan):
     parsed = json.loads(json_str)
 
     flattened_cwiczenia = []
-    # zakładamy, że parsed ma strukturę: { "name": "...", "cwiczenia": [ { ... }, ... ] }
     for cw in parsed.get("cwiczenia", []):
         try:
             cw["liczba_powtorzen"] = int(cw.get("liczba_powtorzen", 0))
@@ -61,6 +60,7 @@ def plan(warunki: ReguestPlan):
 
     print("Wybrane cwiczenia: ", [Exercise(**cw) for cw in flattened_cwiczenia])
     return TreningPlan(
+            id_planu=-1,
             name=parsed.get("name", "Plan bez nazwy"),
             cwiczenia=[Exercise(**cw) for cw in flattened_cwiczenia]
         )

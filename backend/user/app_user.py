@@ -2,7 +2,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from backend.klasy.userbases_to_comunicate import TreningPlan, Trening, Exercise
+from backend.klasy.userbases_to_comunicate import TreningPlan, Trening
 from user import User, UserGender, UserGoal
 
 class App(tk.Tk):
@@ -154,7 +154,7 @@ class RegistrationPage(tk.Frame):
         try:
             public_id = self.user_client.rejestracja(
                 data["Imię"], data["Nazwisko"], data["E-mail"], data["Hasło"],
-                gender, hgt, goal, weight
+                gender, hgt, goal
             )
         except Exception as e:
             messagebox.showerror("Błąd sieci", f"Problem z rejestracją:\n{e}")
