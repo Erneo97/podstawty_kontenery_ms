@@ -18,13 +18,14 @@ co = cohere.ClientV2(APIkey)
 
 @ai_app.get("/trening_plan", response_model=TreningPlan)
 def plan(warunki: ReguestPlan):
-    print("Ja tu działam")
+
     prompt = (
         f"Ułóż plan treningowy na siłownię na {warunki.liczbaDniTreningowych} dni w tygodniu. "
         f"Cel: {warunki.cel}. "
         f"Zwróć dane jako JSON w formacie: "
         f'{{"name": "Plan X", "cwiczenia": [{{"name": "...", "liczba_serii": ..., "liczba_powtorzen": ...}}]}}'
-        f'gdzie liczba_powtorzen oraz liczba_serii jest tylko liczba i występuje zawsze'
+        f'gdzie liczba_powtorzen oraz liczba_serii jest tylko liczba i występuje zawsze',
+        f"Nie dawaj komentarzy."
     )
 
     response = co.chat(
@@ -34,6 +35,7 @@ def plan(warunki: ReguestPlan):
 
     content_items = response.message.content
     text = next((item.text for item in content_items if item.type == "text"), "")
+    print(text)
 
     match = re.search(r"```json\n(.*?)```", text, re.DOTALL)
     if not match:
@@ -42,22 +44,22 @@ def plan(warunki: ReguestPlan):
     json_str = match.group(1)
     parsed = json.loads(json_str)
 
-
     flattened_cwiczenia = []
-    for dzien in parsed.get("cwiczenia", []):
-        for cw in dzien.get("cwiczenia", []):
-            try:
-                cw["liczba_powtorzen"] = int(cw["liczba_powtorzen"])
-            except (ValueError, TypeError):
-                cw["liczba_powtorzen"] = 0
+    # zakładamy, że parsed ma strukturę: { "name": "...", "cwiczenia": [ { ... }, ... ] }
+    for cw in parsed.get("cwiczenia", []):
+        try:
+            cw["liczba_powtorzen"] = int(cw.get("liczba_powtorzen", 0))
+        except (ValueError, TypeError):
+            cw["liczba_powtorzen"] = 0
 
-            try:
-                cw["liczba_serii"] = int(cw["liczba_serii"])
-            except (ValueError, TypeError):
-                cw["liczba_serii"] = 0
+        try:
+            cw["liczba_serii"] = int(cw.get("liczba_serii", 0))
+        except (ValueError, TypeError):
+            cw["liczba_serii"] = 0
 
-            flattened_cwiczenia.append(cw)
+        flattened_cwiczenia.append(cw)
 
+    print("Wybrane cwiczenia: ", [Exercise(**cw) for cw in flattened_cwiczenia])
     return TreningPlan(
             name=parsed.get("name", "Plan bez nazwy"),
             cwiczenia=[Exercise(**cw) for cw in flattened_cwiczenia]

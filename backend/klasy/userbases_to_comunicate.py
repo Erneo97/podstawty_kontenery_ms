@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi.openapi.models import Schema
 from pydantic import BaseModel, Field
 from typing import List
@@ -53,6 +55,7 @@ class NewExercise(BaseModel):
     kategoria: str
 
 class TreningPlan(BaseModel):
+    id_planu: int
     name: str
     cwiczenia: List[Exercise]
 
@@ -62,3 +65,8 @@ class ReguestPlan(BaseModel):
     cel: str
 
 
+class Trening(BaseModel):
+    id_public: str
+    id_trening_plan: int
+    date: str
+    made: List[Exercise]

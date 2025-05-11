@@ -357,6 +357,7 @@ async def get_all_plans(user_id: str = Body(..., embed=True)):
 
         plans.append(
             TreningPlan(
+                id_planu = hdr["id_planu"],
                 name=hdr["nazwa"],
                 cwiczenia=exercises
             )
@@ -476,7 +477,7 @@ async def get_user_trainings(user_id: str = Body(..., embed=True)):
         ]
         result.append(Trening(
             id_public=user_id,
-            id_trening_plan=t["id_treningu"],
+            id_trening_plan=t["id_planu"],
             date=t["data"].strftime("%Y-%m-%d"),
             made=made
         ))
