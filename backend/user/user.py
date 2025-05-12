@@ -95,7 +95,8 @@ class User:
         if response.ok:
             userOut = UserOut(**response.json())
             # print(f"ID uzyskane po rejestracji: {userOut.model_dump()['id_uzytkownika']} kod: {response.status_code}")
-            return userOut.model_dump()['id_uzytkownika'];
+
+            return self.logowanie(email, password)
         else:
             print(f"Blad komunikacji z serwerem {response.status_code} komunikat: {response.text}")
 
